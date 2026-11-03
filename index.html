@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyFlow — Smart Study Planner & Homework Organizer</title>
+  <meta name="description" content="A modern, student-friendly academic planner to organize homework, upcoming tests, projects, study sessions, notes, and daily schedules.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons (Local bundle for offline desktop app) -->
+  <script src="js/lucide.min.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-theme="light">
+  <div id="app-container">
+    <!-- Desktop Sidebar Navigation -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-wrap">
+          <div class="logo-icon">
+            <i data-lucide="graduation-cap"></i>
+          </div>
+          <div class="logo-text">
+            <span class="logo-title">StudyFlow</span>
+            <span class="logo-subtitle">Student Planner</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-view="home" id="nav-btn-home">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-btn" data-view="tasks" id="nav-btn-tasks">
+          <i data-lucide="check-square"></i>
+          <span>Homework & Tasks</span>
+          <span class="nav-badge" id="tasks-badge">0</span>
+        </button>
+        <button class="nav-btn" data-view="planner" id="nav-btn-planner">
+          <i data-lucide="clock"></i>
+          <span>Daily Planner</span>
+        </button>
+        <button class="nav-btn" data-view="calendar" id="nav-btn-calendar">
+          <i data-lucide="calendar"></i>
+          <span>Calendar</span>
+        </button>
+        <button class="nav-btn" data-view="tests" id="nav-btn-tests">
+          <i data-lucide="award"></i>
+          <span>Tests & Exams</span>
+          <span class="nav-badge badge-warning" id="tests-badge">0</span>
+        </button>
+        <button class="nav-btn" data-view="projects" id="nav-btn-projects">
+          <i data-lucide="folder-kanban"></i>
+          <span>Projects</span>
+        </button>
+        <button class="nav-btn" data-view="notes" id="nav-btn-notes">
+          <i data-lucide="sticky-note"></i>
+          <span>Important Notes</span>
+        </button>
+        <button class="nav-btn" data-view="subjects" id="nav-btn-subjects">
+          <i data-lucide="book-open"></i>
+          <span>Subjects</span>
+        </button>
+        <button class="nav-btn" data-view="stats" id="nav-btn-stats">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Progress & Stats</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="streak-card">
+          <div class="streak-icon">🔥</div>
+          <div class="streak-info">
+            <span class="streak-days" id="sidebar-streak-count">5 Days</span>
+            <span class="streak-label">Study Streak!</span>
+          </div>
+        </div>
+        <div class="sidebar-profile">
+          <div class="profile-avatar" id="sidebar-avatar">S</div>
+          <div class="profile-info">
+            <span class="profile-name" id="sidebar-user-name">Student</span>
+            <span class="profile-grade" id="sidebar-user-grade">Grade 10</span>
+          </div>
+          <button class="icon-btn-ghost" id="btn-open-settings" title="Settings & Profile">
+            <i data-lucide="settings"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+      <!-- Top Navigation Header -->
+      <header id="top-header">
+        <div class="header-left">
+          <button class="mobile-menu-btn" id="mobile-menu-trigger" aria-label="Toggle menu">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="search-trigger-btn" id="global-search-trigger" role="button" tabindex="0">
+            <i data-lucide="search"></i>
+            <span class="search-placeholder">Search homework, tests, notes, subjects...</span>
+            <kbd class="kbd-shortcut">Ctrl K</kbd>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Quick capture mini field for rapid capture -->
+          <div class="quick-capture-wrapper">
+            <form id="quick-capture-form" class="quick-capture-form">
+              <i data-lucide="zap" class="qc-icon"></i>
+              <input type="text" id="quick-capture-input" placeholder="Quick capture: 'Bring art supplies tomorrow'..." autocomplete="off">
+              <button type="submit" class="qc-btn" title="Quick Add Note/Reminder">
+                <i data-lucide="plus"></i>
+              </button>
+            </form>
+          </div>
+
+          <!-- Notification Bell -->
+          <div class="notification-wrapper">
+            <button class="icon-btn" id="notifications-btn" title="Reminders & Notifications">
+              <i data-lucide="bell"></i>
+              <span class="notif-dot" id="notif-dot" style="display: none;"></span>
+            </button>
+            <div class="notifications-dropdown" id="notifications-dropdown">
+              <div class="notif-header">
+                <h3>Reminders & Deadlines</h3>
+                <button class="clear-notifs-btn" id="btn-clear-notifs">Dismiss All</button>
+              </div>
+              <div class="notif-list" id="notif-list">
+                <!-- Notifications injected here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Theme Toggle -->
+          <button class="icon-btn" id="theme-toggle-btn" title="Toggle Light/Dark Theme">
+            <i data-lucide="moon" id="theme-icon"></i>
+          </button>
+
+          <!-- Setup Wizard Trigger -->
+          <button class="btn btn-outline" id="btn-open-wizard" title="Run Planner Setup Wizard & Questionnaire">
+            <i data-lucide="sparkles"></i>
+            <span>Setup Wizard</span>
+          </button>
+
+          <!-- Primary Quick Add Button -->
+          <button class="btn btn-primary" id="btn-quick-add">
+            <i data-lucide="plus"></i>
+            <span>Add Item</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- App Views Container -->
+      <div id="view-container">
+
+        <!-- ================= 1. HOME DASHBOARD ================= -->
+        <section id="view-home" class="app-view active">
+          <!-- Greeting Header -->
+          <div class="dashboard-hero">
+            <div class="hero-text">
+              <h1 id="hero-greeting">Good evening, Alex 👋</h1>
+              <p id="hero-subtitle">Here's what you need to focus on today.</p>
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat-pill">
+                <span class="stat-value" id="stat-due-today-count">0</span>
+                <span class="stat-label">Due Today</span>
+              </div>
+              <div class="hero-stat-pill warning">
+                <span class="stat-value" id="stat-tests-count">0</span>
+                <span class="stat-label">Upcoming Tests</span>
+              </div>
+              <div class="hero-stat-pill success">
+                <span class="stat-value" id="stat-completed-today">0</span>
+                <span class="stat-label">Completed Today</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Overdue Alert (Dynamic) -->
+          <div class="alert-banner overdue-alert" id="overdue-banner" style="display: none;">
+            <div class="alert-icon"><i data-lucide="alert-circle"></i></div>
+            <div class="alert-content">
+              <h4 id="overdue-banner-title">2 tasks need your attention</h4>
+              <p>Deadlines have passed. Mark them completed or reschedule with ease.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-warning" id="btn-jump-overdue">Review Overdue</button>
+          </div>
+
+          <!-- Smart "What Should I Focus On?" Recommendation Section -->
+          <div class="smart-focus-card" id="smart-focus-card">
+            <div class="smart-focus-header">
+              <div class="smart-title">
+                <span class="smart-badge"><i data-lucide="sparkles"></i> AI Focus Guide</span>
+                <h3>What should I focus on next?</h3>
+              </div>
+              <span class="smart-subtitle">Prioritized automatically by urgency, test dates & workload</span>
+            </div>
+            <div class="smart-focus-list" id="smart-focus-list">
+              <!-- Dynamically populated smart priorities -->
+            </div>
+          </div>
+
+          <!-- Dashboard Grid Sections -->
+          <div class="dashboard-grid">
+            <!-- Left Column -->
+            <div class="dashboard-col">
+              <!-- Due Today -->
+              <div class="content-card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i data-lucide="clock" class="icon-primary"></i>
+                    <h3>Due Today</h3>
+                  </div>
+                  <span class="badge" id="badge-due-today">0 tasks</span>
+                </div>
+                <div class="card-body">
+                  <div class="task-list" id="home-due-today-list">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Today's Study Tasks -->
+              <div class="content-card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i data-lucide="book-open" class="icon-info"></i>
+                    <h3>Today's Study Tasks</h3>
+                  </div>
+                  <button class="btn-text-sm" id="btn-add-study-task-quick">+ Add Task</button>
+                </div>
+                <div class="card-body">
+                  <div class="task-list" id="home-study-tasks-list">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active Projects Subtasks -->
+              <div class="content-card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i data-lucide="folder-kanban" class="icon-accent"></i>
+                    <h3>Projects in Progress</h3>
+                  </div>
+                  <button class="btn-text-sm" data-goto-view="projects">View All</button>
+                </div>
+                <div class="card-body" id="home-projects-container">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="dashboard-col">
+              <!-- Upcoming Tests & Exams with Prep Checklists -->
+              <div class="content-card card-highlight">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i data-lucide="award" class="icon-warning"></i>
+                    <h3>Upcoming Tests & Exams</h3>
+                  </div>
+                  <button class="btn-text-sm" data-goto-view="tests">View All</button>
+                </div>
+                <div class="card-body">
+                  <div class="test-cards-list" id="home-tests-list">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Due Soon (Next 7 Days) -->
+              <div class="content-card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i data-lucide="calendar-days" class="icon-secondary"></i>
+                    <h3>Due Soon (Next Few Days)</h3>
+                  </div>
+                  <span class="badge" id="badge-due-soon">0 tasks</span>
+                </div>
+                <div class="card-body">
+                  <div class="task-list" id="home-due-soon-list">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pinned & Quick Notes -->
+              <div class="content-card">
+                <div class="card-header">
+                  <div class="card-title">
+                    <i data-lucide="pin" class="icon-pinned"></i>
+                    <h3>Pinned Reminders & Notes</h3>
+                  </div>
+                  <button class="btn-text-sm" data-goto-view="notes">+ New Note</button>
+                </div>
+                <div class="card-body">
+                  <div class="pinned-notes-list" id="home-notes-list">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 2. TASKS & HOMEWORK VIEW ================= -->
+        <section id="view-tasks" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2>Homework & Tasks</h2>
+              <p class="section-desc">Manage all homework, study tasks, and assignments with deadlines</p>
+            </div>
+            <div class="view-actions">
+              <button class="btn btn-outline" id="btn-filter-toggle">
+                <i data-lucide="filter"></i> Filter & Sort
+              </button>
+              <button class="btn btn-primary" id="btn-add-homework-page">
+                <i data-lucide="plus"></i> Add Homework
+              </button>
+            </div>
+          </div>
+
+          <!-- Filter / Sort Toolbar -->
+          <div class="filter-toolbar" id="tasks-filter-toolbar">
+            <div class="filter-group">
+              <label for="filter-task-type">Type:</label>
+              <select id="filter-task-type" class="form-select-sm">
+                <option value="all">All Types</option>
+                <option value="homework">Homework Only</option>
+                <option value="study">Study Tasks Only</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filter-task-subject">Subject:</label>
+              <select id="filter-task-subject" class="form-select-sm">
+                <option value="all">All Subjects</option>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="filter-task-priority">Priority:</label>
+              <select id="filter-task-priority" class="form-select-sm">
+                <option value="all">All Priorities</option>
+                <option value="high">🔴 High</option>
+                <option value="medium">🟠 Medium</option>
+                <option value="low">🟢 Low</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="sort-tasks-by">Sort By:</label>
+              <select id="sort-tasks-by" class="form-select-sm">
+                <option value="dueDate">Due Date (Earliest)</option>
+                <option value="priority">Priority (High to Low)</option>
+                <option value="subject">Subject Name</option>
+                <option value="title">Task Title</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>
+                <input type="checkbox" id="filter-hide-completed" checked> Hide Completed
+              </label>
+            </div>
+          </div>
+
+          <!-- Grouped Task Accordions/Sections -->
+          <div class="task-groups-container" id="task-groups-container">
+            <!-- Overdue Group -->
+            <div class="task-group group-overdue" id="group-overdue">
+              <div class="group-header">
+                <div class="group-title-wrap">
+                  <span class="group-indicator indicator-danger"></span>
+                  <h3>Overdue</h3>
+                  <span class="group-count" id="count-overdue">0</span>
+                </div>
+              </div>
+              <div class="group-items" id="items-overdue"></div>
+            </div>
+
+            <!-- Due Today Group -->
+            <div class="task-group group-today" id="group-today">
+              <div class="group-header">
+                <div class="group-title-wrap">
+                  <span class="group-indicator indicator-today"></span>
+                  <h3>Due Today</h3>
+                  <span class="group-count" id="count-today">0</span>
+                </div>
+              </div>
+              <div class="group-items" id="items-today"></div>
+            </div>
+
+            <!-- Due Tomorrow Group -->
+            <div class="task-group group-tomorrow" id="group-tomorrow">
+              <div class="group-header">
+                <div class="group-title-wrap">
+                  <span class="group-indicator indicator-tomorrow"></span>
+                  <h3>Due Tomorrow</h3>
+                  <span class="group-count" id="count-tomorrow">0</span>
+                </div>
+              </div>
+              <div class="group-items" id="items-tomorrow"></div>
+            </div>
+
+            <!-- Due This Week Group -->
+            <div class="task-group group-this-week" id="group-this-week">
+              <div class="group-header">
+                <div class="group-title-wrap">
+                  <span class="group-indicator indicator-week"></span>
+                  <h3>Due This Week</h3>
+                  <span class="group-count" id="count-this-week">0</span>
+                </div>
+              </div>
+              <div class="group-items" id="items-this-week"></div>
+            </div>
+
+            <!-- Later Group -->
+            <div class="task-group group-later" id="group-later">
+              <div class="group-header">
+                <div class="group-title-wrap">
+                  <span class="group-indicator indicator-later"></span>
+                  <h3>Later</h3>
+                  <span class="group-count" id="count-later">0</span>
+                </div>
+              </div>
+              <div class="group-items" id="items-later"></div>
+            </div>
+
+            <!-- Completed Group -->
+            <div class="task-group group-completed" id="group-completed">
+              <div class="group-header">
+                <div class="group-title-wrap">
+                  <span class="group-indicator indicator-success"></span>
+                  <h3>Completed</h3>
+                  <span class="group-count" id="count-completed">0</span>
+                </div>
+              </div>
+              <div class="group-items" id="items-completed"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 3. TESTS & EXAMS VIEW ================= -->
+        <section id="view-tests" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2>Tests & Exams</h2>
+              <p class="section-desc">Track upcoming exams, review topics, and manage revision preparation checklists</p>
+            </div>
+            <button class="btn btn-primary" id="btn-add-test-page">
+              <i data-lucide="plus"></i> Add Test / Exam
+            </button>
+          </div>
+
+          <div class="tests-grid" id="all-tests-grid">
+            <!-- Full test cards rendered by JS -->
+          </div>
+        </section>
+
+        <!-- ================= 4. PROJECTS VIEW ================= -->
+        <section id="view-projects" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2>Projects & Long-Term Assignments</h2>
+              <p class="section-desc">Multi-day assignments broken into manageable subtask milestones</p>
+            </div>
+            <button class="btn btn-primary" id="btn-add-project-page">
+              <i data-lucide="plus"></i> New Project
+            </button>
+          </div>
+
+          <div class="projects-grid" id="all-projects-grid">
+            <!-- Project cards rendered by JS -->
+          </div>
+        </section>
+
+        <!-- ================= 5. DAILY PLANNER VIEW ================= -->
+        <section id="view-planner" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2>Daily Schedule & Routine</h2>
+              <p class="section-desc">Time-block your day to balance school, study, breaks, and homework</p>
+            </div>
+            <div class="view-actions">
+              <div class="date-navigator">
+                <button class="icon-btn-sm" id="planner-prev-day"><i data-lucide="chevron-left"></i></button>
+                <span class="current-date-label" id="planner-date-display">Today</span>
+                <button class="icon-btn-sm" id="planner-next-day"><i data-lucide="chevron-right"></i></button>
+                <button class="btn btn-sm btn-outline" id="planner-today-btn">Today</button>
+              </div>
+              <button class="btn btn-primary" id="btn-add-planner-slot">
+                <i data-lucide="plus"></i> Add Block
+              </button>
+            </div>
+          </div>
+
+          <div class="planner-layout">
+            <!-- Daily Schedule Column -->
+            <div class="planner-schedule-card">
+              <div class="planner-timeline" id="planner-timeline">
+                <!-- Timeline blocks rendered here -->
+              </div>
+            </div>
+
+            <!-- Side helper: Unscheduled tasks to drag or click-to-add -->
+            <div class="planner-sidebar">
+              <div class="content-card">
+                <div class="card-header">
+                  <h3>Tasks for this day</h3>
+                  <span class="badge" id="planner-assigned-count">0 items</span>
+                </div>
+                <div class="card-body">
+                  <div class="planner-day-tasks" id="planner-day-tasks-list">
+                    <!-- Tasks due or scheduled for this date -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 6. CALENDAR VIEW ================= -->
+        <section id="view-calendar" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2>Academic Calendar</h2>
+              <p class="section-desc">Monthly overview of homework deadlines, exams, projects, and study sessions</p>
+            </div>
+            <div class="calendar-controls">
+              <button class="icon-btn-sm" id="cal-prev-month"><i data-lucide="chevron-left"></i></button>
+              <h3 id="cal-month-year">October 2026</h3>
+              <button class="icon-btn-sm" id="cal-next-month"><i data-lucide="chevron-right"></i></button>
+              <button class="btn btn-sm btn-outline" id="cal-today-btn">Today</button>
+            </div>
+          </div>
+
+          <div class="calendar-layout">
+            <!-- Monthly Calendar Grid -->
+            <div class="calendar-main">
+              <div class="calendar-weekdays">
+                <span>Sun</span>
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+              </div>
+              <div class="calendar-grid" id="calendar-grid">
+                <!-- Days populated by JS -->
+              </div>
+            </div>
+
+            <!-- Selected Date Agenda Drawer/Sidebar -->
+            <div class="calendar-agenda">
+              <div class="agenda-header">
+                <div>
+                  <h3 id="agenda-selected-date">Today's Schedule</h3>
+                  <span class="agenda-sub" id="agenda-count">0 items scheduled</span>
+                </div>
+                <button class="btn-text-sm" id="btn-agenda-add-item">+ Add for Date</button>
+              </div>
+              <div class="agenda-list" id="agenda-items-list">
+                <!-- Events for selected date -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 7. IMPORTANT NOTES VIEW ================= -->
+        <section id="view-notes" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2>Important Notes & Digital Notebook</h2>
+              <p class="section-desc">Quick reminders, teacher instructions, supplies needed, and key information</p>
+            </div>
+            <button class="btn btn-primary" id="btn-add-note-page">
+              <i data-lucide="plus"></i> New Note
+            </button>
+          </div>
+
+          <div class="notes-search-bar">
+            <i data-lucide="search"></i>
+            <input type="text" id="notes-search-input" placeholder="Search notes by keyword or subject...">
+          </div>
+
+          <div class="notes-container">
+            <div class="notes-section" id="pinned-notes-section">
+              <div class="section-title-sm"><i data-lucide="pin"></i> Pinned Notes</div>
+              <div class="notes-grid" id="pinned-notes-grid"></div>
+            </div>
+
+            <div class="notes-section">
+              <div class="section-title-sm"><i data-lucide="file-text"></i> All Notes</div>
+              <div class="notes-grid" id="all-notes-grid"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= 8. SUBJECTS VIEW ================= -->
+        <section id="view-subjects" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2>Academic Subjects</h2>
+              <p class="section-desc">Manage course subjects, customize colors, and monitor workload per course</p>
+            </div>
+            <button class="btn btn-primary" id="btn-add-subject-page">
+              <i data-lucide="plus"></i> Add Subject
+            </button>
+          </div>
+
+          <div class="subjects-grid" id="subjects-cards-grid">
+            <!-- Populated dynamically -->
+          </div>
+        </section>
+
+        <!-- ================= 9. PROGRESS & STATS VIEW ================= -->
+        <section id="view-stats" class="app-view">
+          <div class="view-header">
+            <div>
+              <h2>Progress & Study Insights</h2>
+              <p class="section-desc">Encouraging summary of your academic productivity and workload balance</p>
+            </div>
+          </div>
+
+          <div class="stats-overview-grid">
+            <div class="stat-card">
+              <div class="stat-card-icon stat-bg-purple"><i data-lucide="check-circle-2"></i></div>
+              <div class="stat-card-data">
+                <span class="stat-card-number" id="stats-completed-week">0</span>
+                <span class="stat-card-title">Completed This Week</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon stat-bg-fire">🔥</div>
+              <div class="stat-card-data">
+                <span class="stat-card-number" id="stats-streak-days">5 Days</span>
+                <span class="stat-card-title">Active Study Streak</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon stat-bg-blue"><i data-lucide="award"></i></div>
+              <div class="stat-card-data">
+                <span class="stat-card-number" id="stats-completion-rate">0%</span>
+                <span class="stat-card-title">Homework Completion Rate</span>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-icon stat-bg-amber"><i data-lucide="hourglass"></i></div>
+              <div class="stat-card-data">
+                <span class="stat-card-number" id="stats-active-deadlines">0</span>
+                <span class="stat-card-title">Upcoming Deadlines</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-details-grid">
+            <!-- Weekly Productivity Visual -->
+            <div class="content-card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i data-lucide="trending-up" class="icon-primary"></i>
+                  <h3>Weekly Task Activity</h3>
+                </div>
+                <span class="badge badge-success">Consistent!</span>
+              </div>
+              <div class="card-body">
+                <div class="weekly-bar-chart" id="stats-weekly-chart">
+                  <!-- Bar chart columns rendered by JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Subject Workload Distribution -->
+            <div class="content-card">
+              <div class="card-header">
+                <div class="card-title">
+                  <i data-lucide="pie-chart" class="icon-info"></i>
+                  <h3>Subject Workload</h3>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="workload-list" id="stats-workload-list">
+                  <!-- Subject bars rendered by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Encouragement banner -->
+          <div class="encouragement-card">
+            <div class="encouragement-icon">🌟</div>
+            <div class="encouragement-text">
+              <h3>Great momentum, keep it going!</h3>
+              <p>Planning ahead reduces last-minute stress and helps you perform your best on tests.</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <nav id="mobile-bottom-nav">
+      <button class="mobile-nav-btn active" data-view="home">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Home</span>
+      </button>
+      <button class="mobile-nav-btn" data-view="tasks">
+        <i data-lucide="check-square"></i>
+        <span>Tasks</span>
+      </button>
+      <button class="mobile-nav-btn mobile-nav-add" id="mobile-quick-add" aria-label="Add item">
+        <div class="fab-circle">
+          <i data-lucide="plus"></i>
+        </div>
+      </button>
+      <button class="mobile-nav-btn" data-view="calendar">
+        <i data-lucide="calendar"></i>
+        <span>Calendar</span>
+      </button>
+      <button class="mobile-nav-btn" data-view="planner">
+        <i data-lucide="clock"></i>
+        <span>Planner</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ================= MODALS & DIALOGS ================= -->
+
+  <!-- 1. Universal Quick Add Modal -->
+  <div class="modal-overlay" id="modal-quick-add" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i data-lucide="plus-circle" class="modal-header-icon"></i>
+          <h2 id="quick-add-modal-title">Add New Item</h2>
+        </div>
+        <button class="icon-btn-ghost modal-close-btn" data-close-modal="modal-quick-add">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <!-- Segmented Type Selector -->
+      <div class="modal-type-tabs" id="quick-add-type-tabs">
+        <button type="button" class="type-tab-btn active" data-type="homework">
+          <i data-lucide="check-square"></i> Homework
+        </button>
+        <button type="button" class="type-tab-btn" data-type="test">
+          <i data-lucide="award"></i> Test/Exam
+        </button>
+        <button type="button" class="type-tab-btn" data-type="study">
+          <i data-lucide="book-open"></i> Study Task
+        </button>
+        <button type="button" class="type-tab-btn" data-type="project">
+          <i data-lucide="folder-kanban"></i> Project
+        </button>
+        <button type="button" class="type-tab-btn" data-type="note">
+          <i data-lucide="sticky-note"></i> Note
+        </button>
+      </div>
+
+      <form id="form-quick-add" class="modal-form">
+        <input type="hidden" id="add-item-type" value="homework">
+        <input type="hidden" id="edit-item-id" value="">
+
+        <!-- Title -->
+        <div class="form-group">
+          <label for="input-item-title">Title / Name <span class="required">*</span></label>
+          <input type="text" id="input-item-title" class="form-control" placeholder="e.g. Complete Chapter 4 exercises" required>
+        </div>
+
+        <!-- Subject -->
+        <div class="form-group" id="group-field-subject">
+          <label for="select-item-subject">Subject <span class="required">*</span></label>
+          <select id="select-item-subject" class="form-control" required>
+            <!-- Injected dynamically -->
+          </select>
+        </div>
+
+        <!-- Date & Time Row -->
+        <div class="form-row" id="group-field-datetime">
+          <div class="form-group col-6">
+            <label for="input-item-date" id="label-item-date">Due Date <span class="required">*</span></label>
+            <input type="date" id="input-item-date" class="form-control" required>
+          </div>
+          <div class="form-group col-6">
+            <label for="input-item-time" id="label-item-time">Time</label>
+            <input type="time" id="input-item-time" class="form-control" value="18:00">
+          </div>
+        </div>
+
+        <!-- Priority & Duration Row (For Homework / Study Task / Project / Test) -->
+        <div class="form-row" id="group-field-meta">
+          <div class="form-group col-6" id="field-priority-wrap">
+            <label for="select-item-priority">Priority</label>
+            <select id="select-item-priority" class="form-control">
+              <option value="medium">🟠 Medium</option>
+              <option value="high">🔴 High</option>
+              <option value="low">🟢 Low</option>
+            </select>
+          </div>
+          <div class="form-group col-6" id="field-duration-wrap">
+            <label for="input-item-duration">Est. Duration</label>
+            <select id="input-item-duration" class="form-control">
+              <option value="15">15 minutes</option>
+              <option value="30">30 minutes</option>
+              <option value="45" selected>45 minutes</option>
+              <option value="60">1 hour</option>
+              <option value="90">1.5 hours</option>
+              <option value="120">2 hours</option>
+              <option value="180">3+ hours</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Topics Covered (For Test) -->
+        <div class="form-group" id="group-field-test-topics" style="display: none;">
+          <label for="input-test-topics">Topics Covered (comma separated)</label>
+          <input type="text" id="input-test-topics" class="form-control" placeholder="e.g. Cell Structure, Genetics, Photosynthesis">
+        </div>
+
+        <!-- Test Location (Optional) -->
+        <div class="form-group" id="group-field-test-location" style="display: none;">
+          <label for="input-test-location">Location / Room (Optional)</label>
+          <input type="text" id="input-test-location" class="form-control" placeholder="e.g. Science Lab 2, Hall B">
+        </div>
+
+        <!-- Preparation Tasks Creator for Test -->
+        <div class="form-group" id="group-field-test-prep" style="display: none;">
+          <label>Initial Preparation Tasks</label>
+          <div class="prep-quick-suggestions">
+            <span class="prep-chip" data-task="Review chapter notes">+ Review chapter notes</span>
+            <span class="prep-chip" data-task="Make flashcards">+ Make flashcards</span>
+            <span class="prep-chip" data-task="Practice sample problems">+ Practice questions</span>
+            <span class="prep-chip" data-task="Final review with study buddy">+ Final review</span>
+          </div>
+          <div id="test-prep-list" class="subtask-inputs-list">
+            <!-- Dynamic input rows -->
+          </div>
+          <button type="button" class="btn-text-sm" id="btn-add-prep-input">+ Add prep task</button>
+        </div>
+
+        <!-- Subtasks for Project -->
+        <div class="form-group" id="group-field-project-tasks" style="display: none;">
+          <label>Project Subtasks & Milestones</label>
+          <div id="project-subtasks-list" class="subtask-inputs-list">
+            <!-- Dynamic input rows -->
+          </div>
+          <button type="button" class="btn-text-sm" id="btn-add-subtask-input">+ Add subtask milestone</button>
+        </div>
+
+        <!-- Description / Notes -->
+        <div class="form-group">
+          <label for="input-item-desc" id="label-item-desc">Description / Instructions</label>
+          <textarea id="input-item-desc" class="form-control" rows="3" placeholder="Add any details, page numbers, or key reminders..."></textarea>
+        </div>
+
+        <!-- Note Pin Option (Notes only) -->
+        <div class="form-group" id="group-field-pin" style="display: none;">
+          <label class="checkbox-label">
+            <input type="checkbox" id="input-note-pinned">
+            <span>📌 Pin this note to top of dashboard & notes view</span>
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modal-quick-add">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="btn-submit-quick-add">Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Global Search Modal (Ctrl+K) -->
+  <div class="modal-overlay" id="modal-search" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box modal-search-box">
+      <div class="search-input-header">
+        <i data-lucide="search" class="search-modal-icon"></i>
+        <input type="text" id="modal-search-field" placeholder="Search anything (homework, tests, projects, notes, subjects)..." autofocus autocomplete="off">
+        <button class="icon-btn-ghost modal-close-btn" data-close-modal="modal-search">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <div class="search-results-container" id="search-results-list">
+        <div class="search-empty-state">
+          <p>Type to search across all your academic tasks, upcoming exams, projects and notes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Add Subject Modal -->
+  <div class="modal-overlay" id="modal-add-subject" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box modal-sm">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i data-lucide="book-open" class="modal-header-icon"></i>
+          <h2 id="subject-modal-title">Add Subject</h2>
+        </div>
+        <button class="icon-btn-ghost modal-close-btn" data-close-modal="modal-add-subject">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-subject" class="modal-form">
+        <input type="hidden" id="edit-subject-id" value="">
+        <div class="form-group">
+          <label for="input-subject-name">Subject Name <span class="required">*</span></label>
+          <input type="text" id="input-subject-name" class="form-control" placeholder="e.g. Physics, World History" required>
+        </div>
+        <div class="form-group">
+          <label for="input-subject-teacher">Teacher / Instructor (Optional)</label>
+          <input type="text" id="input-subject-teacher" class="form-control" placeholder="e.g. Dr. Roberts">
+        </div>
+        <div class="form-group">
+          <label>Theme Color</label>
+          <div class="color-picker-palette" id="subject-color-palette">
+            <label class="color-option"><input type="radio" name="subj-color" value="#6366f1" checked><span style="background-color: #6366f1;"></span></label>
+            <label class="color-option"><input type="radio" name="subj-color" value="#3b82f6"><span style="background-color: #3b82f6;"></span></label>
+            <label class="color-option"><input type="radio" name="subj-color" value="#10b981"><span style="background-color: #10b981;"></span></label>
+            <label class="color-option"><input type="radio" name="subj-color" value="#f59e0b"><span style="background-color: #f59e0b;"></span></label>
+            <label class="color-option"><input type="radio" name="subj-color" value="#ec4899"><span style="background-color: #ec4899;"></span></label>
+            <label class="color-option"><input type="radio" name="subj-color" value="#8b5cf6"><span style="background-color: #8b5cf6;"></span></label>
+            <label class="color-option"><input type="radio" name="subj-color" value="#06b6d4"><span style="background-color: #06b6d4;"></span></label>
+            <label class="color-option"><input type="radio" name="subj-color" value="#ef4444"><span style="background-color: #ef4444;"></span></label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modal-add-subject">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Subject</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Add Daily Planner Time Block Modal -->
+  <div class="modal-overlay" id="modal-planner-block" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box modal-sm">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i data-lucide="clock" class="modal-header-icon"></i>
+          <h2>Add Daily Schedule Block</h2>
+        </div>
+        <button class="icon-btn-ghost modal-close-btn" data-close-modal="modal-planner-block">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-planner-block" class="modal-form">
+        <div class="form-group">
+          <label for="input-block-title">Activity Title <span class="required">*</span></label>
+          <input type="text" id="input-block-title" class="form-control" placeholder="e.g. Math homework, Chemistry revision, Break" required>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="input-block-start">Start Time</label>
+            <input type="time" id="input-block-start" class="form-control" value="16:00" required>
+          </div>
+          <div class="form-group col-6">
+            <label for="input-block-end">End Time</label>
+            <input type="time" id="input-block-end" class="form-control" value="17:00" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="select-block-category">Category</label>
+          <select id="select-block-category" class="form-control">
+            <option value="study">📚 Study Session</option>
+            <option value="homework">📝 Homework</option>
+            <option value="school">🏫 School / Class</option>
+            <option value="break">☕ Break / Rest</option>
+            <option value="other">📌 Other Activity</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modal-planner-block">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add to Schedule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 5. Settings & Profile Modal -->
+  <div class="modal-overlay" id="modal-settings" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <i data-lucide="settings" class="modal-header-icon"></i>
+          <h2>Planner Settings & Profile</h2>
+        </div>
+        <button class="icon-btn-ghost modal-close-btn" data-close-modal="modal-settings">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="form-settings" class="modal-form">
+        <div class="form-group">
+          <label for="input-settings-name">Student Name</label>
+          <input type="text" id="input-settings-name" class="form-control">
+        </div>
+        <div class="form-row">
+          <div class="form-group col-6">
+            <label for="input-settings-grade">Grade / Year</label>
+            <input type="text" id="input-settings-grade" class="form-control" placeholder="e.g. Grade 10">
+          </div>
+          <div class="form-group col-6">
+            <label for="input-settings-school">School Name (Optional)</label>
+            <input type="text" id="input-settings-school" class="form-control" placeholder="e.g. Lincoln High">
+          </div>
+        </div>
+        <div class="settings-danger-zone">
+          <h4>Data Management</h4>
+          <p>Export your study planner data as JSON or reset to default demo data.</p>
+          <div class="settings-actions-row">
+            <button type="button" class="btn btn-outline btn-sm" id="btn-replay-onboarding">
+              <i data-lucide="sparkles"></i> Run Setup Wizard
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-export-data">
+              <i data-lucide="download"></i> Export Data
+            </button>
+            <button type="button" class="btn btn-outline btn-sm" id="btn-load-demo-data">
+              <i data-lucide="rotate-ccw"></i> Reset Demo Data
+            </button>
+            <button type="button" class="btn btn-outline-danger btn-sm" id="btn-clear-all-data">
+              <i data-lucide="trash-2"></i> Clear All Data
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" data-close-modal="modal-settings">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 6. First-Time Setup / Interactive Onboarding Wizard Modal -->
+  <div class="modal-overlay onboarding-overlay" id="modal-onboarding" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-box wizard-box">
+      <!-- Wizard Progress Bar & Stepper -->
+      <div class="wizard-header">
+        <div class="wizard-title-row">
+          <div class="wizard-badge-icon">
+            <i data-lucide="graduation-cap"></i>
+          </div>
+          <div>
+            <h2 class="wizard-main-title">StudyFlow Setup Wizard</h2>
+            <p class="wizard-main-sub">Set up your subjects, schedule, homework, tests, and reminders</p>
+          </div>
+        </div>
+
+        <div class="wizard-stepper">
+          <div class="wizard-progress-track">
+            <div class="wizard-progress-bar" id="wizard-progress-fill" style="width: 14%;"></div>
+          </div>
+          <div class="wizard-steps-indicators" id="wizard-step-indicators">
+            <div class="wizard-step-dot active" data-step="1" title="1. Profile">
+              <span>1</span><label>Profile</label>
+            </div>
+            <div class="wizard-step-dot" data-step="2" title="2. Subjects">
+              <span>2</span><label>Subjects</label>
+            </div>
+            <div class="wizard-step-dot" data-step="3" title="3. Schedule">
+              <span>3</span><label>Schedule</label>
+            </div>
+            <div class="wizard-step-dot" data-step="4" title="4. Homework">
+              <span>4</span><label>Homework</label>
+            </div>
+            <div class="wizard-step-dot" data-step="5" title="5. Tests">
+              <span>5</span><label>Tests</label>
+            </div>
+            <div class="wizard-step-dot" data-step="6" title="6. Reminders">
+              <span>6</span><label>Reminders</label>
+            </div>
+            <div class="wizard-step-dot" data-step="7" title="7. Ready">
+              <span>7</span><label>Ready</label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Wizard Step Panes -->
+      <div class="wizard-body">
+
+        <!-- ================= STEP 1: Student Profile ================= -->
+        <div class="wizard-pane active" id="wizard-step-1">
+          <div class="wizard-pane-header">
+            <h3>👤 Tell us about yourself</h3>
+            <p>We'll personalize your dashboard, greetings, and academic organization.</p>
+          </div>
+          <div class="wizard-form-fields">
+            <div class="form-group">
+              <label for="wz-name">What's your name? <span class="required">*</span></label>
+              <input type="text" id="wz-name" class="form-control" placeholder="e.g. Alex, Emily, Jordan" value="Student" required>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label for="wz-grade">Grade / Year</label>
+                <input type="text" id="wz-grade" class="form-control" placeholder="e.g. Grade 10, Sophomore" value="Grade 10">
+              </div>
+              <div class="form-group col-6">
+                <label for="wz-school">School / College (Optional)</label>
+                <input type="text" id="wz-school" class="form-control" placeholder="e.g. Riverdale High">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Choose Color Theme</label>
+              <div class="theme-choice-row">
+                <button type="button" class="theme-card active" id="wz-theme-light" data-theme="light">
+                  <i data-lucide="sun"></i>
+                  <span>Light Mode</span>
+                </button>
+                <button type="button" class="theme-card" id="wz-theme-dark" data-theme="dark">
+                  <i data-lucide="moon"></i>
+                  <span>Dark Mode</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= STEP 2: Subjects Selection & Customization ================= -->
+        <div class="wizard-pane" id="wizard-step-2">
+          <div class="wizard-pane-header">
+            <h3>📚 What subjects are you taking?</h3>
+            <p>Add, customize, or remove subjects so your courses accurately match your classes.</p>
+          </div>
+
+          <!-- Active Selected Subjects List (Removable Chips) -->
+          <div class="wizard-section-box">
+            <label class="wizard-box-label">Your Active Subjects (<span id="wz-subjects-count">4</span>):</label>
+            <div class="wz-active-subjects-tray" id="wz-active-subjects-tray">
+              <!-- Dynamically populated chips with '×' -->
+            </div>
+          </div>
+
+          <!-- Quick Common Subjects Library to click-add -->
+          <div class="wizard-section-box">
+            <label class="wizard-box-label">Click to quick-add common subjects:</label>
+            <div class="wz-quick-subjects-grid" id="wz-quick-subjects-grid">
+              <!-- Populated by JS -->
+            </div>
+          </div>
+
+          <!-- Custom Subject Adder -->
+          <div class="wizard-custom-subject-card">
+            <h4>+ Add a Custom Subject</h4>
+            <div class="wz-custom-subj-row">
+              <input type="text" id="wz-custom-subj-name" class="form-control" placeholder="Subject Name (e.g. AP Psychology, Art)">
+              <input type="text" id="wz-custom-subj-teacher" class="form-control" placeholder="Teacher Name (Optional)">
+              <div class="wz-color-circle-picker" id="wz-color-circle-picker">
+                <label class="color-option-sm"><input type="radio" name="wz-subj-col" value="#6366f1" checked><span style="background-color: #6366f1;"></span></label>
+                <label class="color-option-sm"><input type="radio" name="wz-subj-col" value="#10b981"><span style="background-color: #10b981;"></span></label>
+                <label class="color-option-sm"><input type="radio" name="wz-subj-col" value="#f59e0b"><span style="background-color: #f59e0b;"></span></label>
+                <label class="color-option-sm"><input type="radio" name="wz-subj-col" value="#ec4899"><span style="background-color: #ec4899;"></span></label>
+                <label class="color-option-sm"><input type="radio" name="wz-subj-col" value="#3b82f6"><span style="background-color: #3b82f6;"></span></label>
+                <label class="color-option-sm"><input type="radio" name="wz-subj-col" value="#8b5cf6"><span style="background-color: #8b5cf6;"></span></label>
+              </div>
+              <button type="button" class="btn btn-outline" id="btn-wz-add-custom-subject">+ Add</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= STEP 3: Daily Routine & Planner Times ================= -->
+        <div class="wizard-pane" id="wizard-step-3">
+          <div class="wizard-pane-header">
+            <h3>⏰ Your Daily Schedule & Routine</h3>
+            <p>Tell us your real school and study hours so your Daily Planner accurately blocks your time.</p>
+          </div>
+
+          <div class="wz-schedule-grid">
+            <div class="wz-time-card">
+              <div class="wz-time-card-header">
+                <span class="wz-card-icon" style="background-color: rgba(99, 102, 241, 0.15); color: #6366f1;">🏫</span>
+                <div>
+                  <h4>School & Classes</h4>
+                  <p>When you are at school or in class</p>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <label for="wz-time-school-start">Start Time</label>
+                  <input type="time" id="wz-time-school-start" class="form-control" value="08:30">
+                </div>
+                <div class="form-group col-6">
+                  <label for="wz-time-school-end">End Time</label>
+                  <input type="time" id="wz-time-school-end" class="form-control" value="15:00">
+                </div>
+              </div>
+            </div>
+
+            <div class="wz-time-card">
+              <div class="wz-time-card-header">
+                <span class="wz-card-icon" style="background-color: rgba(59, 130, 246, 0.15); color: #3b82f6;">📝</span>
+                <div>
+                  <h4>Homework & Assignments</h4>
+                  <p>Daily time slot dedicated to homework</p>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <label for="wz-time-hw-start">Start Time</label>
+                  <input type="time" id="wz-time-hw-start" class="form-control" value="16:30">
+                </div>
+                <div class="form-group col-6">
+                  <label for="wz-time-hw-end">End Time</label>
+                  <input type="time" id="wz-time-hw-end" class="form-control" value="18:00">
+                </div>
+              </div>
+            </div>
+
+            <div class="wz-time-card">
+              <div class="wz-time-card-header">
+                <span class="wz-card-icon" style="background-color: rgba(245, 158, 11, 0.15); color: #f59e0b;">☕</span>
+                <div>
+                  <h4>Snack & Free Time</h4>
+                  <p>Break to recharge, outdoor time, or dinner</p>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <label for="wz-time-break-start">Start Time</label>
+                  <input type="time" id="wz-time-break-start" class="form-control" value="18:00">
+                </div>
+                <div class="form-group col-6">
+                  <label for="wz-time-break-end">End Time</label>
+                  <input type="time" id="wz-time-break-end" class="form-control" value="19:00">
+                </div>
+              </div>
+            </div>
+
+            <div class="wz-time-card">
+              <div class="wz-time-card-header">
+                <span class="wz-card-icon" style="background-color: rgba(16, 185, 129, 0.15); color: #10b981;">📚</span>
+                <div>
+                  <h4>Study & Exam Revision</h4>
+                  <p>Focused evening revision, reading, or flashcards</p>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group col-6">
+                  <label for="wz-time-study-start">Start Time</label>
+                  <input type="time" id="wz-time-study-start" class="form-control" value="19:30">
+                </div>
+                <div class="form-group col-6">
+                  <label for="wz-time-study-end">End Time</label>
+                  <input type="time" id="wz-time-study-end" class="form-control" value="21:00">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= STEP 4: Current Homework & Tasks ================= -->
+        <div class="wizard-pane" id="wizard-step-4">
+          <div class="wizard-pane-header">
+            <h3>📝 Any homework or tasks due today / this week?</h3>
+            <p>Enter the assignments you have to do so your dashboard is ready with your actual workload.</p>
+          </div>
+
+          <!-- Mini Homework Adder Form -->
+          <div class="wizard-inline-adder">
+            <h4>+ Add a Homework Assignment</h4>
+            <div class="form-row">
+              <div class="form-group col-8">
+                <label for="wz-hw-title">Assignment Title <span class="required">*</span></label>
+                <input type="text" id="wz-hw-title" class="form-control" placeholder="e.g. Chapter 4 exercises p. 112 #1-15">
+              </div>
+              <div class="form-group col-4">
+                <label for="wz-hw-subject">Subject</label>
+                <select id="wz-hw-subject" class="form-control">
+                  <!-- Injected from Step 2 subjects -->
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-4">
+                <label for="wz-hw-date">Due Date</label>
+                <input type="date" id="wz-hw-date" class="form-control">
+              </div>
+              <div class="form-group col-4">
+                <label for="wz-hw-time">Due Time</label>
+                <input type="time" id="wz-hw-time" class="form-control" value="20:00">
+              </div>
+              <div class="form-group col-4">
+                <label for="wz-hw-priority">Priority</label>
+                <select id="wz-hw-priority" class="form-control">
+                  <option value="high">🔴 High Priority</option>
+                  <option value="medium" selected>🟠 Medium Priority</option>
+                  <option value="low">🟢 Low Priority</option>
+                </select>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-wz-add-hw">+ Add This Homework</button>
+            </div>
+          </div>
+
+          <!-- Added Homework List -->
+          <div class="wizard-items-list-container">
+            <label class="wizard-box-label">Homework to be added (<span id="wz-hw-count">0</span>):</label>
+            <div class="wizard-items-list" id="wz-hw-list">
+              <div class="wz-empty-msg">No homework added yet. Add your tasks above or click Skip if you have none right now.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= STEP 5: Upcoming Tests & Exams ================= -->
+        <div class="wizard-pane" id="wizard-step-5">
+          <div class="wizard-pane-header">
+            <h3>🏆 Any upcoming tests, quizzes, or exams?</h3>
+            <p>Keep track of test dates and topics to prepare before exam day.</p>
+          </div>
+
+          <!-- Mini Test Adder Form -->
+          <div class="wizard-inline-adder">
+            <h4>+ Add an Upcoming Test</h4>
+            <div class="form-row">
+              <div class="form-group col-8">
+                <label for="wz-test-name">Test / Exam Name <span class="required">*</span></label>
+                <input type="text" id="wz-test-name" class="form-control" placeholder="e.g. Science Midterm: Cell Biology">
+              </div>
+              <div class="form-group col-4">
+                <label for="wz-test-subject">Subject</label>
+                <select id="wz-test-subject" class="form-control">
+                  <!-- Injected from Step 2 subjects -->
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-6">
+                <label for="wz-test-date">Exam Date <span class="required">*</span></label>
+                <input type="date" id="wz-test-date" class="form-control">
+              </div>
+              <div class="form-group col-6">
+                <label for="wz-test-topics">Topics (comma separated)</label>
+                <input type="text" id="wz-test-topics" class="form-control" placeholder="e.g. Mitosis, Genetics, Punnett Squares">
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-wz-add-test">+ Add This Test</button>
+            </div>
+          </div>
+
+          <!-- Added Tests List -->
+          <div class="wizard-items-list-container">
+            <label class="wizard-box-label">Upcoming tests to track (<span id="wz-tests-count">0</span>):</label>
+            <div class="wizard-items-list" id="wz-tests-list">
+              <div class="wz-empty-msg">No tests scheduled yet. Add tests above or skip to next step.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= STEP 6: Reminders & Notes ================= -->
+        <div class="wizard-pane" id="wizard-step-6">
+          <div class="wizard-pane-header">
+            <h3>📌 Important reminders & teacher notes</h3>
+            <p>Save notes on supplies to bring, permission slips, or things not to forget.</p>
+          </div>
+
+          <!-- Mini Reminder Adder Form -->
+          <div class="wizard-inline-adder">
+            <h4>+ Add a Reminder Note</h4>
+            <div class="form-row">
+              <div class="form-group col-8">
+                <label for="wz-note-text">Reminder / Note <span class="required">*</span></label>
+                <input type="text" id="wz-note-text" class="form-control" placeholder="e.g. Bring scientific calculator and sketchbook tomorrow">
+              </div>
+              <div class="form-group col-4">
+                <label for="wz-note-subject">Subject</label>
+                <select id="wz-note-subject" class="form-control">
+                  <!-- Injected from Step 2 subjects -->
+                </select>
+              </div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+              <button type="button" class="btn btn-primary btn-sm" id="btn-wz-add-note">+ Add Reminder</button>
+            </div>
+          </div>
+
+          <!-- Added Notes List -->
+          <div class="wizard-items-list-container">
+            <label class="wizard-box-label">Pinned reminders (<span id="wz-notes-count">0</span>):</label>
+            <div class="wizard-items-list" id="wz-notes-list">
+              <div class="wz-empty-msg">No reminders added yet. Add a quick note above or click Next.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ================= STEP 7: Summary & Finish ================= -->
+        <div class="wizard-pane" id="wizard-step-7">
+          <div class="wizard-pane-header text-center">
+            <div class="wz-celebrate-badge">🎉</div>
+            <h3>Your Study Planner is Ready!</h3>
+            <p>Here is a summary of what we configured for you:</p>
+          </div>
+
+          <div class="wizard-summary-cards-grid">
+            <div class="wz-summary-card">
+              <div class="wz-sum-icon">👤</div>
+              <div class="wz-sum-info">
+                <span class="wz-sum-label">Student Profile</span>
+                <span class="wz-sum-val" id="wz-sum-student">Alex (Grade 10)</span>
+              </div>
+            </div>
+
+            <div class="wz-summary-card">
+              <div class="wz-sum-icon">📚</div>
+              <div class="wz-sum-info">
+                <span class="wz-sum-label">Active Subjects</span>
+                <span class="wz-sum-val" id="wz-sum-subjects">4 subjects</span>
+              </div>
+            </div>
+
+            <div class="wz-summary-card">
+              <div class="wz-sum-icon">⏰</div>
+              <div class="wz-sum-info">
+                <span class="wz-sum-label">Daily Schedule</span>
+                <span class="wz-sum-val" id="wz-sum-schedule">Routine configured</span>
+              </div>
+            </div>
+
+            <div class="wz-summary-card">
+              <div class="wz-sum-icon">📝</div>
+              <div class="wz-sum-info">
+                <span class="wz-sum-label">Tasks & Homework</span>
+                <span class="wz-sum-val" id="wz-sum-homework">0 homework tasks</span>
+              </div>
+            </div>
+
+            <div class="wz-summary-card">
+              <div class="wz-sum-icon">🏆</div>
+              <div class="wz-sum-info">
+                <span class="wz-sum-label">Upcoming Tests</span>
+                <span class="wz-sum-val" id="wz-sum-tests">0 tests</span>
+              </div>
+            </div>
+
+            <div class="wz-summary-card">
+              <div class="wz-sum-icon">📌</div>
+              <div class="wz-sum-info">
+                <span class="wz-sum-label">Pinned Notes</span>
+                <span class="wz-sum-val" id="wz-sum-notes">0 reminders</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-demo-alternative">
+            <p>Want to explore pre-filled sample courses and assignments first?</p>
+            <button type="button" class="btn-text-sm" id="btn-wz-load-demo">🔄 Or Load Sample Demo Data</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Wizard Navigation Footer -->
+      <div class="wizard-footer">
+        <button type="button" class="btn btn-outline" id="wizard-btn-prev" style="display: none;">
+          <i data-lucide="chevron-left"></i> Back
+        </button>
+
+        <div class="wizard-step-indicator-text" id="wizard-step-text">Step 1 of 7</div>
+
+        <div class="wizard-footer-right">
+          <button type="button" class="btn btn-ghost" id="wizard-btn-skip" style="display: none;">
+            Skip this step
+          </button>
+          <button type="button" class="btn btn-primary" id="wizard-btn-next">
+            Next Step <i data-lucide="chevron-right"></i>
+          </button>
+          <button type="button" class="btn btn-primary btn-lg" id="wizard-btn-finish" style="display: none;">
+            🚀 Save & Open Planner
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/smart-prioritizer.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/modals.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

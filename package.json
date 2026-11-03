@@ -1,0 +1,67 @@
+{
+  "name": "studyflow",
+  "productName": "StudyFlow",
+  "version": "1.0.0",
+  "description": "StudyFlow — Smart Study Planner & Homework Organizer",
+  "main": "main.js",
+  "author": "StudyFlow",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build:portable": "electron-builder --win portable",
+    "build:installer": "electron-builder --win nsis",
+    "build": "electron-builder --win portable nsis",
+    "dist": "electron-builder --win portable"
+  },
+  "build": {
+    "appId": "com.studyflow.planner",
+    "productName": "StudyFlow",
+    "copyright": "Copyright © 2026 StudyFlow",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "index.html",
+      "main.js",
+      "preload.js",
+      "css/**/*",
+      "js/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "shortcutName": "StudyFlow",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "runAfterFinish": true
+    },
+    "portable": {
+      "artifactName": "StudyFlow-Portable-v${version}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "@electron/packager": "^20.3.0",
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3",
+    "png-to-ico": "^3.0.2"
+  }
+}
